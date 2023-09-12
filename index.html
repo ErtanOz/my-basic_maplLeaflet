@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Köln Map of Monuments</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <script src="js/leaflet.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+        .legend {
+            color: #333;
+            font-family: 'Open Sans', Helvetica, sans-serif;
+            padding: 6px 21px 6px 21px;
+            background-color: #dae7e4;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0,0,0,0.5);
+            border-radius: 5px;
+        }
+        .legend h3 {
+            line-height: 5px;
+        }
+        .legend ul {
+            line-height: 15px;
+            padding-left: 20px;
+        }
+      
+    </style>    
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+
+    // Tile layer
+let osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+let imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
+var Stadia_StamenWatercolor = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.{ext}', {
+	minZoom: 1,
+	maxZoom: 16,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'jpg'
+});
+
+// Coordinates array (lat-lon)
+coords = [
+    [50.9, 6.9],
+    [51.0, 6.88],
+    [50.9, 6.9],
+    [50.9, 6.7]
+];
+
+// Markers
+let pnt = L.layerGroup();
+L.marker(coords[0]).bindPopup("<b>Museum 1:</b><br>WRM").addTo(pnt);
+L.marker(coords[1]).bindPopup("<b>Museum:</b><br>MAKK").addTo(pnt);
+L.marker(coords[2]).bindPopup("<b>Museum:</b><br>RGM").addTo(pnt);
+L.marker(coords[3]).bindPopup("<b>Museum:</b><br>Ludwig").addTo(pnt);
+
+// Line
+let line = L.polyline(coords, {color: "red", weight: 7}).bindPopup("Travel Path");
+// Add polygon
+let pol = L.polygon(
+  [
+              [50.95573705420338,6.933954652098322
+              
+            ],
+            [
+             50.91744141845436,6.933954652098322
+              
+            ],
+            [
+              50.91744141845436,6.993756343467396
+              
+            ],
+            [
+              50.95573705420338,6.993756343467396
+              
+            ],
+            [
+              50.95573705420338,6.933954652098322
+              ]
+            
+  ], 
+  {color: "red", fillColor: "yellow", weight: 4}
+).addTo(pnt);
+// Map
+let map = L.map('map', {center: [51, 7], zoom: 12, layers: [osm, pnt, line]});
+
+// Description
+let legend = L.control({position: "bottomleft"});
+legend.onAdd = function() {
+    let div = L.DomUtil.create("div", "legend");
+    div.innerHTML = 
+        '<h3>Köln Denmäler und Museen</h3>' +
+        '<ul>' +
+        '<li>WRM</li>' +
+        '<li>MAKK</li>' +
+        '<li>RGM</li>' +
+        '<li>Ludwig</li>' +
+        '<li>Archäologische Zone</li>'+
+        '</ul>'
+    return div;
+};
+legend.addTo(map);
+
+
+// Layer control
+let baseMaps = {
+    "OSM": osm,
+    "Imagery": imagery,
+    "Statement": Stadia_StamenWatercolor
+};
+let overlayMaps = {
+    "Museum": pnt,
+    "Travel Path": line,
+    "Monument": line
+};
+L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: false}).addTo(map);
+    
+    </script>
+</body>
+</html>
